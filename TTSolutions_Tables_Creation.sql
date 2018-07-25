@@ -1,38 +1,6 @@
 -- ****************** SqlDBM: Microsoft SQL Server ******************
 -- ******************************************************************
 
---************************************** [dbo].[USERS]
-
-CREATE TABLE [dbo].[USERS]
-(
- [User_ID]         INT IDENTITY (1, 1) NOT NULL ,
- [First_Name]      NVARCHAR(40) NOT NULL ,
- [Last_Name]       NVARCHAR(20) NOT NULL ,
- [User_Name]       NVARCHAR(20) NOT NULL ,
- [Password_Hash]   BINARY NOT NULL ,
- [Address1]        NVARCHAR(200) NULL ,
- [Address2]        NVARCHAR(200) NULL ,
- [City]            NVARCHAR(20) NULL ,
- [State]           NVARCHAR(20) NULL ,
- [Zip]             INT NULL ,
- [Phone]           INT NULL ,
- [Fax]             INT NULL ,
- [Email]           NVARCHAR(100) NULL ,
- [create_on]       DATETIME NOT NULL ,
- [created_by]      NVARCHAR(20) NOT NULL ,
- [last_updated]    DATETIME NOT NULL ,
- [last_updated_by] NVARCHAR(20) NOT NULL ,
- [Effective_Start] DATETIME NOT NULL CONSTRAINT [DF_USERS_Effective_Start] DEFAULT ((1)) ,
- [Effective_End]   DATETIME NULL ,
-
- CONSTRAINT [PK_All_Users] PRIMARY KEY CLUSTERED ([User_ID] ASC),
- CONSTRAINT [UQ__USERS__681E8A60D2308CFE] UNIQUE NONCLUSTERED ([User_Name] ASC),
- CONSTRAINT [UQ__USERS__A9D10534E457AB22] UNIQUE NONCLUSTERED ([Email] ASC)
-);
-GO
-
-
-
 --************************************** [dbo].[TaskStatuses]
 
 CREATE TABLE [dbo].[TaskStatuses]
@@ -57,7 +25,6 @@ CREATE TABLE [dbo].[Roles]
  [Role_ID]            INT IDENTITY (1, 1) NOT NULL ,
  [Role_Name]          VARCHAR(20) NOT NULL ,
  [Role_Description]   VARCHAR(100) NOT NULL ,
- [Created_On]         DATETIME NOT NULL ,
  [Created_By]         VARCHAR(20) NOT NULL ,
  [Last_Updated]       DATETIME NOT NULL ,
  [Last_Updated_By]    VARCHAR(20) NOT NULL ,
@@ -273,137 +240,43 @@ CREATE NONCLUSTERED INDEX [fkIdx_590] ON [dbo].[EnterPriseRolePermissions]
 GO
 
 
---************************************** [dbo].[UserRoles]
+--************************************** [dbo].[USERS]
 
-CREATE TABLE [dbo].[UserRoles]
+CREATE TABLE [dbo].[USERS]
 (
- [ID]              INT IDENTITY (1, 1) NOT NULL ,
- [Effective_Start] DATETIME NOT NULL ,
- [Effective_End]   DATETIME NOT NULL ,
- [User_ID]         INT NOT NULL ,
- [Role_ID]         INT NOT NULL ,
-
- CONSTRAINT [PK_UserRoles] PRIMARY KEY CLUSTERED ([ID] ASC),
- CONSTRAINT [FK_User_Role] FOREIGN KEY ([Role_ID])
-  REFERENCES [dbo].[Roles]([Role_ID]),
- CONSTRAINT [FK_User_Role_For] FOREIGN KEY ([User_ID])
-  REFERENCES [dbo].[USERS]([User_ID])
-);
-GO
-
-
-CREATE NONCLUSTERED INDEX [fkIdx_User_Role] ON [dbo].[UserRoles] 
- (
-  [Role_ID] ASC
- )
-
-GO
-
-CREATE NONCLUSTERED INDEX [fkIdx_User_Role_For] ON [dbo].[UserRoles] 
- (
-  [User_ID] ASC
- )
-
-GO
-
-
---************************************** [dbo].[UserPermissions]
-
-CREATE TABLE [dbo].[UserPermissions]
-(
- [ID]              INT IDENTITY (1, 1) NOT NULL ,
- [Effective_Start] DATETIME NOT NULL ,
+ [User_ID]         INT IDENTITY (1, 1) NOT NULL ,
+ [First_Name]      NVARCHAR(40) NOT NULL ,
+ [Last_Name]       NVARCHAR(20) NOT NULL ,
+ [User_Name]       NVARCHAR(20) NOT NULL ,
+ [Password_Hash]   BINARY NOT NULL ,
+ [Address1]        NVARCHAR(200) NULL ,
+ [Address2]        NVARCHAR(200) NULL ,
+ [City]            NVARCHAR(20) NULL ,
+ [State]           NVARCHAR(20) NULL ,
+ [Zip]             INT NULL ,
+ [Phone]           INT NULL ,
+ [Fax]             INT NULL ,
+ [Email]           NVARCHAR(100) NULL ,
+ [create_on]       DATETIME NOT NULL ,
+ [created_by]      NVARCHAR(20) NOT NULL ,
+ [last_updated]    DATETIME NOT NULL ,
+ [last_updated_by] NVARCHAR(20) NOT NULL ,
+ [Effective_Start] DATETIME NOT NULL CONSTRAINT [DF_USERS_Effective_Start] DEFAULT ((1)) ,
  [Effective_End]   DATETIME NULL ,
- [User_ID]         INT NOT NULL ,
- [Permission_ID]   INT NOT NULL ,
-
- CONSTRAINT [PK_UserPermissions] PRIMARY KEY CLUSTERED ([ID] ASC),
- CONSTRAINT [FK_User_Permission] FOREIGN KEY ([Permission_ID])
-  REFERENCES [dbo].[Permissions]([Permission_ID]),
- CONSTRAINT [FK_User_Permission_For] FOREIGN KEY ([User_ID])
-  REFERENCES [dbo].[USERS]([User_ID])
-);
-GO
-
-
-CREATE NONCLUSTERED INDEX [fkIdx_User_Permission] ON [dbo].[UserPermissions] 
- (
-  [Permission_ID] ASC
- )
-
-GO
-
-CREATE NONCLUSTERED INDEX [fkIdx_User_Permission_For] ON [dbo].[UserPermissions] 
- (
-  [User_ID] ASC
- )
-
-GO
-
-
---************************************** [dbo].[UserEmailGroups]
-
-CREATE TABLE [dbo].[UserEmailGroups]
-(
- [ID]              INT IDENTITY (1, 1) NOT NULL ,
- [Effective_Start] DATETIME NOT NULL ,
- [Effective_End]   DATETIME NULL ,
- [User_ID]         INT NOT NULL ,
- [Email_Group_ID]  INT NOT NULL ,
-
- CONSTRAINT [PK_UserEmailGroups] PRIMARY KEY CLUSTERED ([ID] ASC),
- CONSTRAINT [FK_User_Email_Group] FOREIGN KEY ([Email_Group_ID])
-  REFERENCES [dbo].[EmailGroups]([Email_Group_ID]),
- CONSTRAINT [FK_User_Email_Group_For] FOREIGN KEY ([User_ID])
-  REFERENCES [dbo].[USERS]([User_ID])
-);
-GO
-
-
-CREATE NONCLUSTERED INDEX [fkIdx_User_Email_Group] ON [dbo].[UserEmailGroups] 
- (
-  [Email_Group_ID] ASC
- )
-
-GO
-
-CREATE NONCLUSTERED INDEX [fkIdx_User_Email_Group_For] ON [dbo].[UserEmailGroups] 
- (
-  [User_ID] ASC
- )
-
-GO
-
-
---************************************** [dbo].[UserCompanies]
-
-CREATE TABLE [dbo].[UserCompanies]
-(
- [ID]              INT IDENTITY (1, 1) NOT NULL ,
- [Effective_Start] DATETIME NOT NULL ,
- [Effective_End]   DATETIME NULL ,
- [User_ID]         INT NOT NULL ,
  [Company_ID]      INT NOT NULL ,
 
- CONSTRAINT [PK_UserCompanies] PRIMARY KEY CLUSTERED ([ID] ASC),
- CONSTRAINT [FK_User_Company] FOREIGN KEY ([Company_ID])
-  REFERENCES [dbo].[Companies]([Company_ID]),
- CONSTRAINT [FK_User_Company_For] FOREIGN KEY ([User_ID])
-  REFERENCES [dbo].[USERS]([User_ID])
+ CONSTRAINT [PK_All_Users] PRIMARY KEY CLUSTERED ([User_ID] ASC),
+ CONSTRAINT [UQ__USERS__681E8A60D2308CFE] UNIQUE NONCLUSTERED ([User_Name] ASC),
+ CONSTRAINT [UQ__USERS__A9D10534E457AB22] UNIQUE NONCLUSTERED ([Email] ASC),
+ CONSTRAINT [FK_609] FOREIGN KEY ([Company_ID])
+  REFERENCES [dbo].[Companies]([Company_ID])
 );
 GO
 
 
-CREATE NONCLUSTERED INDEX [fkIdx_User_Company] ON [dbo].[UserCompanies] 
+CREATE NONCLUSTERED INDEX [fkIdx_609] ON [dbo].[USERS] 
  (
   [Company_ID] ASC
- )
-
-GO
-
-CREATE NONCLUSTERED INDEX [fkIdx_User_Company_For] ON [dbo].[UserCompanies] 
- (
-  [User_ID] ASC
  )
 
 GO
@@ -431,34 +304,6 @@ GO
 CREATE NONCLUSTERED INDEX [fkIdx_System_Module_Permission] ON [dbo].[SystemModules] 
  (
   [Permission_ID] ASC
- )
-
-GO
-
-
---************************************** [dbo].[SalesTasks]
-
-CREATE TABLE [dbo].[SalesTasks]
-(
- [Sale_Task_ID]    INT IDENTITY (1, 1) NOT NULL ,
- [TaskTitle]       VARCHAR(200) NOT NULL ,
- [TaskDescription] VARCHAR(2000) NOT NULL ,
- [DueDate]         DATETIME NOT NULL ,
- [CreatedBy]       INT NOT NULL ,
- [Effective_Start] DATETIME NOT NULL ,
- [isGroupAction]   BIT NOT NULL ,
- [Effective_End]   DATETIME NULL ,
-
- CONSTRAINT [PK_SalesTasks] PRIMARY KEY CLUSTERED ([Sale_Task_ID] ASC),
- CONSTRAINT [FK_Sales_Task_CrreatedBy] FOREIGN KEY ([CreatedBy])
-  REFERENCES [dbo].[USERS]([User_ID])
-);
-GO
-
-
-CREATE NONCLUSTERED INDEX [fkIdx_Sales_Task_CrreatedBy] ON [dbo].[SalesTasks] 
- (
-  [CreatedBy] ASC
  )
 
 GO
@@ -493,39 +338,6 @@ GO
 CREATE NONCLUSTERED INDEX [fkIdx_Role_Permission] ON [dbo].[RolePermissions] 
  (
   [Permission_ID] ASC
- )
-
-GO
-
-
---************************************** [dbo].[Quotes]
-
-CREATE TABLE [dbo].[Quotes]
-(
- [Quote_ID]        INT IDENTITY (1, 1) NOT NULL ,
- [Last_Updated]    DATETIME NOT NULL ,
- [Last_Updated_By] INT NOT NULL ,
- [Quote_Status_ID] INT NOT NULL ,
-
- CONSTRAINT [PK_Quotes] PRIMARY KEY CLUSTERED ([Quote_ID] ASC),
- CONSTRAINT [FK_Quote_Last_UpdatedBy] FOREIGN KEY ([Last_Updated_By])
-  REFERENCES [dbo].[USERS]([User_ID]),
- CONSTRAINT [FK_Quote_Status] FOREIGN KEY ([Quote_Status_ID])
-  REFERENCES [dbo].[QuoteStatuses]([Quote_Status_ID])
-);
-GO
-
-
-CREATE NONCLUSTERED INDEX [fkIdx_Quote_Last_UpdatedBy] ON [dbo].[Quotes] 
- (
-  [Last_Updated_By] ASC
- )
-
-GO
-
-CREATE NONCLUSTERED INDEX [fkIdx_Quote_Status] ON [dbo].[Quotes] 
- (
-  [Quote_Status_ID] ASC
  )
 
 GO
@@ -642,6 +454,203 @@ CREATE NONCLUSTERED INDEX [fkIdx_EnterPrise_Role_For] ON [dbo].[CompanyEnterpris
 GO
 
 
+--************************************** [dbo].[UserRoles]
+
+CREATE TABLE [dbo].[UserRoles]
+(
+ [ID]              INT IDENTITY (1, 1) NOT NULL ,
+ [Effective_Start] DATETIME NOT NULL ,
+ [Effective_End]   DATETIME NOT NULL ,
+ [User_ID]         INT NOT NULL ,
+ [Role_ID]         INT NOT NULL ,
+
+ CONSTRAINT [PK_UserRoles] PRIMARY KEY CLUSTERED ([ID] ASC),
+ CONSTRAINT [FK_User_Role] FOREIGN KEY ([Role_ID])
+  REFERENCES [dbo].[Roles]([Role_ID]),
+ CONSTRAINT [FK_User_Role_For] FOREIGN KEY ([User_ID])
+  REFERENCES [dbo].[USERS]([User_ID])
+);
+GO
+
+
+CREATE NONCLUSTERED INDEX [fkIdx_User_Role] ON [dbo].[UserRoles] 
+ (
+  [Role_ID] ASC
+ )
+
+GO
+
+CREATE NONCLUSTERED INDEX [fkIdx_User_Role_For] ON [dbo].[UserRoles] 
+ (
+  [User_ID] ASC
+ )
+
+GO
+
+
+--************************************** [dbo].[UserPermissions]
+
+CREATE TABLE [dbo].[UserPermissions]
+(
+ [ID]              INT IDENTITY (1, 1) NOT NULL ,
+ [Effective_Start] DATETIME NOT NULL ,
+ [Effective_End]   DATETIME NULL ,
+ [User_ID]         INT NOT NULL ,
+ [Permission_ID]   INT NOT NULL ,
+
+ CONSTRAINT [PK_UserPermissions] PRIMARY KEY CLUSTERED ([ID] ASC),
+ CONSTRAINT [FK_User_Permission] FOREIGN KEY ([Permission_ID])
+  REFERENCES [dbo].[Permissions]([Permission_ID]),
+ CONSTRAINT [FK_User_Permission_For] FOREIGN KEY ([User_ID])
+  REFERENCES [dbo].[USERS]([User_ID])
+);
+GO
+
+
+CREATE NONCLUSTERED INDEX [fkIdx_User_Permission] ON [dbo].[UserPermissions] 
+ (
+  [Permission_ID] ASC
+ )
+
+GO
+
+CREATE NONCLUSTERED INDEX [fkIdx_User_Permission_For] ON [dbo].[UserPermissions] 
+ (
+  [User_ID] ASC
+ )
+
+GO
+
+
+--************************************** [dbo].[UserEmailGroups]
+
+CREATE TABLE [dbo].[UserEmailGroups]
+(
+ [ID]              INT IDENTITY (1, 1) NOT NULL ,
+ [Effective_Start] DATETIME NOT NULL ,
+ [Effective_End]   DATETIME NULL ,
+ [User_ID]         INT NOT NULL ,
+ [Email_Group_ID]  INT NOT NULL ,
+
+ CONSTRAINT [PK_UserEmailGroups] PRIMARY KEY CLUSTERED ([ID] ASC),
+ CONSTRAINT [FK_User_Email_Group] FOREIGN KEY ([Email_Group_ID])
+  REFERENCES [dbo].[EmailGroups]([Email_Group_ID]),
+ CONSTRAINT [FK_User_Email_Group_For] FOREIGN KEY ([User_ID])
+  REFERENCES [dbo].[USERS]([User_ID])
+);
+GO
+
+
+CREATE NONCLUSTERED INDEX [fkIdx_User_Email_Group] ON [dbo].[UserEmailGroups] 
+ (
+  [Email_Group_ID] ASC
+ )
+
+GO
+
+CREATE NONCLUSTERED INDEX [fkIdx_User_Email_Group_For] ON [dbo].[UserEmailGroups] 
+ (
+  [User_ID] ASC
+ )
+
+GO
+
+
+--************************************** [dbo].[ManufacturerReps]
+
+CREATE TABLE [dbo].[ManufacturerReps]
+(
+ [ID]              INT IDENTITY (1, 1) NOT NULL ,
+ [Effective_Start] DATETIME NOT NULL ,
+ [Effective_End]   DATETIME NULL ,
+ [User_ID]         INT NOT NULL ,
+ [Company_ID]      INT NOT NULL ,
+
+ CONSTRAINT [PK_UserCompanies] PRIMARY KEY CLUSTERED ([ID] ASC),
+ CONSTRAINT [FK_User_Company] FOREIGN KEY ([Company_ID])
+  REFERENCES [dbo].[Companies]([Company_ID]),
+ CONSTRAINT [FK_User_Company_For] FOREIGN KEY ([User_ID])
+  REFERENCES [dbo].[USERS]([User_ID])
+);
+GO
+
+
+CREATE NONCLUSTERED INDEX [fkIdx_User_Company] ON [dbo].[ManufacturerReps] 
+ (
+  [Company_ID] ASC
+ )
+
+GO
+
+CREATE NONCLUSTERED INDEX [fkIdx_User_Company_For] ON [dbo].[ManufacturerReps] 
+ (
+  [User_ID] ASC
+ )
+
+GO
+
+
+--************************************** [dbo].[SalesTasks]
+
+CREATE TABLE [dbo].[SalesTasks]
+(
+ [Sale_Task_ID]    INT IDENTITY (1, 1) NOT NULL ,
+ [TaskTitle]       VARCHAR(200) NOT NULL ,
+ [TaskDescription] VARCHAR(2000) NOT NULL ,
+ [DueDate]         DATETIME NOT NULL ,
+ [CreatedBy]       INT NOT NULL ,
+ [Effective_Start] DATETIME NOT NULL ,
+ [isGroupAction]   BIT NOT NULL ,
+ [Effective_End]   DATETIME NULL ,
+
+ CONSTRAINT [PK_SalesTasks] PRIMARY KEY CLUSTERED ([Sale_Task_ID] ASC),
+ CONSTRAINT [FK_Sales_Task_CrreatedBy] FOREIGN KEY ([CreatedBy])
+  REFERENCES [dbo].[USERS]([User_ID])
+);
+GO
+
+
+CREATE NONCLUSTERED INDEX [fkIdx_Sales_Task_CrreatedBy] ON [dbo].[SalesTasks] 
+ (
+  [CreatedBy] ASC
+ )
+
+GO
+
+
+--************************************** [dbo].[Quotes]
+
+CREATE TABLE [dbo].[Quotes]
+(
+ [Quote_ID]        INT IDENTITY (1, 1) NOT NULL ,
+ [Last_Updated]    DATETIME NOT NULL ,
+ [Last_Updated_By] INT NOT NULL ,
+ [Quote_Status_ID] INT NOT NULL ,
+
+ CONSTRAINT [PK_Quotes] PRIMARY KEY CLUSTERED ([Quote_ID] ASC),
+ CONSTRAINT [FK_Quote_Last_UpdatedBy] FOREIGN KEY ([Last_Updated_By])
+  REFERENCES [dbo].[USERS]([User_ID]),
+ CONSTRAINT [FK_Quote_Status] FOREIGN KEY ([Quote_Status_ID])
+  REFERENCES [dbo].[QuoteStatuses]([Quote_Status_ID])
+);
+GO
+
+
+CREATE NONCLUSTERED INDEX [fkIdx_Quote_Last_UpdatedBy] ON [dbo].[Quotes] 
+ (
+  [Last_Updated_By] ASC
+ )
+
+GO
+
+CREATE NONCLUSTERED INDEX [fkIdx_Quote_Status] ON [dbo].[Quotes] 
+ (
+  [Quote_Status_ID] ASC
+ )
+
+GO
+
+
 --************************************** [dbo].[CompanyCalendar]
 
 CREATE TABLE [dbo].[CompanyCalendar]
@@ -687,6 +696,50 @@ GO
 CREATE NONCLUSTERED INDEX [fkIdx_Calendar_Type] ON [dbo].[CompanyCalendar] 
  (
   [Calendar_Type_ID] ASC
+ )
+
+GO
+
+
+--************************************** [dbo].[Company_Products]
+
+CREATE TABLE [dbo].[Company_Products]
+(
+ [ID]              INT IDENTITY (1, 1) NOT NULL ,
+ [Effective_Start] DATETIME NOT NULL ,
+ [Effective_End]   DATETIME NULL ,
+ [Company_ID]      INT NOT NULL ,
+ [Product_ID]      INT NOT NULL ,
+ [Discount_ID]     INT NOT NULL ,
+
+ CONSTRAINT [PK_Company_Products] PRIMARY KEY CLUSTERED ([ID] ASC),
+ CONSTRAINT [FK_Company_Products_Assigned_For_Company] FOREIGN KEY ([Company_ID])
+  REFERENCES [dbo].[Companies]([Company_ID]),
+ CONSTRAINT [FK_Company_Products_Assigned_Product] FOREIGN KEY ([Product_ID])
+  REFERENCES [dbo].[Products]([Product_ID]),
+ CONSTRAINT [FK_Company_Products_Discount] FOREIGN KEY ([Discount_ID])
+  REFERENCES [dbo].[DiscountTypes]([Discount_ID])
+);
+GO
+
+
+CREATE NONCLUSTERED INDEX [fkIdx_Company_Products_Assigned_For_Company] ON [dbo].[Company_Products] 
+ (
+  [Company_ID] ASC
+ )
+
+GO
+
+CREATE NONCLUSTERED INDEX [fkIdx_Company_Products_Assigned_Product] ON [dbo].[Company_Products] 
+ (
+  [Product_ID] ASC
+ )
+
+GO
+
+CREATE NONCLUSTERED INDEX [fkIdx_Company_Products_Discount] ON [dbo].[Company_Products] 
+ (
+  [Discount_ID] ASC
  )
 
 GO
@@ -848,50 +901,6 @@ GO
 CREATE NONCLUSTERED INDEX [fkIdx_Quote_GeneratedFor_Company] ON [dbo].[QuoteGeneratedFor] 
  (
   [Company_ID] ASC
- )
-
-GO
-
-
---************************************** [dbo].[Company_Products]
-
-CREATE TABLE [dbo].[Company_Products]
-(
- [ID]              INT IDENTITY (1, 1) NOT NULL ,
- [Effective_Start] DATETIME NOT NULL ,
- [Effective_End]   DATETIME NULL ,
- [Company_ID]      INT NOT NULL ,
- [Product_ID]      INT NOT NULL ,
- [Discount_ID]     INT NOT NULL ,
-
- CONSTRAINT [PK_Company_Products] PRIMARY KEY CLUSTERED ([ID] ASC),
- CONSTRAINT [FK_Company_Products_Assigned_For_Company] FOREIGN KEY ([Company_ID])
-  REFERENCES [dbo].[Companies]([Company_ID]),
- CONSTRAINT [FK_Company_Products_Assigned_Product] FOREIGN KEY ([Product_ID])
-  REFERENCES [dbo].[Products]([Product_ID]),
- CONSTRAINT [FK_Company_Products_Discount] FOREIGN KEY ([Discount_ID])
-  REFERENCES [dbo].[DiscountTypes]([Discount_ID])
-);
-GO
-
-
-CREATE NONCLUSTERED INDEX [fkIdx_Company_Products_Assigned_For_Company] ON [dbo].[Company_Products] 
- (
-  [Company_ID] ASC
- )
-
-GO
-
-CREATE NONCLUSTERED INDEX [fkIdx_Company_Products_Assigned_Product] ON [dbo].[Company_Products] 
- (
-  [Product_ID] ASC
- )
-
-GO
-
-CREATE NONCLUSTERED INDEX [fkIdx_Company_Products_Discount] ON [dbo].[Company_Products] 
- (
-  [Discount_ID] ASC
  )
 
 GO
