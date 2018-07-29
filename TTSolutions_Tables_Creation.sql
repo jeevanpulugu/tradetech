@@ -1,6 +1,23 @@
 -- ****************** SqlDBM: Microsoft SQL Server ******************
 -- ******************************************************************
 
+--************************************** [dbo].[GroupTypes]
+
+CREATE TABLE [dbo].[GroupTypes]
+(
+ [Group_Type_ID]            INT IDENTITY (1, 1) NOT NULL ,
+ [Group_Type]               VARCHAR(50) NOT NULL ,
+ [Group_Type_Description]   VARCHAR(200) NOT NULL ,
+ [Effective_Start]          DATETIME NOT NULL ,
+ [Effective_End]            DATETIME NULL ,
+ [Group_Type_Business_Name] VARCHAR(50) NOT NULL ,
+
+ CONSTRAINT [PK_GroupTypes] PRIMARY KEY CLUSTERED ([Group_Type_ID] ASC)
+);
+GO
+
+
+
 --************************************** [dbo].[TaskType]
 
 CREATE TABLE [dbo].[TaskType]
@@ -201,9 +218,9 @@ GO
 
 
 
---************************************** [dbo].[USERS]
+--************************************** [dbo].[Users]
 
-CREATE TABLE [dbo].[USERS]
+CREATE TABLE [dbo].[Users]
 (
  [User_ID]         INT IDENTITY (1, 1) NOT NULL ,
  [First_Name]      NVARCHAR(40) NOT NULL ,
@@ -222,7 +239,7 @@ CREATE TABLE [dbo].[USERS]
  [created_by]      NVARCHAR(20) NOT NULL ,
  [last_updated]    DATETIME NOT NULL ,
  [last_updated_by] NVARCHAR(20) NOT NULL ,
- [Effective_Start] DATETIME NOT NULL CONSTRAINT [DF_USERS_Effective_Start] DEFAULT ((1)) ,
+ [Effective_Start] DATETIME NOT NULL CONSTRAINT [DF_Users_Effective_Start] DEFAULT ((1)) ,
  [Effective_End]   DATETIME NULL ,
  [Company_ID]      INT NOT NULL ,
 
@@ -421,7 +438,7 @@ CREATE TABLE [dbo].[UserRoles]
  CONSTRAINT [FK_User_Role] FOREIGN KEY ([Role_ID])
   REFERENCES [dbo].[Roles]([Role_ID]),
  CONSTRAINT [FK_User_Role_For] FOREIGN KEY ([User_ID])
-  REFERENCES [dbo].[USERS]([User_ID])
+  REFERENCES [dbo].[Users]([User_ID])
 );
 GO
 
@@ -445,7 +462,7 @@ CREATE TABLE [dbo].[UserPermissions]
  CONSTRAINT [FK_User_Permission] FOREIGN KEY ([Permission_ID])
   REFERENCES [dbo].[Permissions]([Permission_ID]),
  CONSTRAINT [FK_User_Permission_For] FOREIGN KEY ([User_ID])
-  REFERENCES [dbo].[USERS]([User_ID])
+  REFERENCES [dbo].[Users]([User_ID])
 );
 GO
 
@@ -472,7 +489,7 @@ CREATE TABLE [dbo].[Tasks]
 
  CONSTRAINT [PK_SalesTasks] PRIMARY KEY CLUSTERED ([Task_ID] ASC),
  CONSTRAINT [FK_Sales_Task_CrreatedBy] FOREIGN KEY ([CreatedBy])
-  REFERENCES [dbo].[USERS]([User_ID]),
+  REFERENCES [dbo].[Users]([User_ID]),
  CONSTRAINT [FK_652] FOREIGN KEY ([Task_Type_ID])
   REFERENCES [dbo].[TaskType]([Task_Type_ID]),
  CONSTRAINT [FK_656] FOREIGN KEY ([Task_Status])
@@ -503,7 +520,7 @@ CREATE TABLE [dbo].[QuoteRevisions]
 
  CONSTRAINT [PK_QuoteRevisionHistory] PRIMARY KEY NONCLUSTERED ([Quote_Revision_ID] ASC),
  CONSTRAINT [FK_Quote_Revision_CreatedBy] FOREIGN KEY ([Created_By])
-  REFERENCES [dbo].[USERS]([User_ID]),
+  REFERENCES [dbo].[Users]([User_ID]),
  CONSTRAINT [FK_Quote_Revision_For_Quote] FOREIGN KEY ([Quote_ID])
   REFERENCES [dbo].[Quotes]([Quote_ID]),
  CONSTRAINT [FK_Quote_Revision_Quote_Type] FOREIGN KEY ([Quote_Type_ID])
@@ -537,7 +554,7 @@ CREATE TABLE [dbo].[ManufacturerReps]
  CONSTRAINT [FK_User_Company] FOREIGN KEY ([Company_ID])
   REFERENCES [dbo].[Companies]([Company_ID]),
  CONSTRAINT [FK_User_Company_For] FOREIGN KEY ([User_ID])
-  REFERENCES [dbo].[USERS]([User_ID])
+  REFERENCES [dbo].[Users]([User_ID])
 );
 GO
 
@@ -547,25 +564,28 @@ GO
 --SKIP Index: [fkIdx_User_Company_For]
 
 
---************************************** [dbo].[EmailGroups]
+--************************************** [dbo].[Groups]
 
-CREATE TABLE [dbo].[EmailGroups]
+CREATE TABLE [dbo].[Groups]
 (
- [Email_Group_ID]            INT IDENTITY (1, 1) NOT NULL ,
- [Group_Name]                VARCHAR(50) NOT NULL ,
- [Group_Description]         VARCHAR(100) NULL ,
- [Last_Updated]              DATETIME NOT NULL ,
- [Effective_Start]           DATETIME NOT NULL CONSTRAINT [DF_EmailGroups_Effective_Start] DEFAULT ((1)) ,
- [Effective_End]             DATETIME NULL ,
- [Email_Group_Business_Name] VARCHAR(50) NOT NULL ,
- [Created_By]                INT NOT NULL ,
- [Last_Updated_By]           INT NOT NULL ,
+ [Group_ID]            INT IDENTITY (1, 1) NOT NULL ,
+ [Group_Name]          VARCHAR(50) NOT NULL ,
+ [Group_Description]   VARCHAR(100) NULL ,
+ [Last_Updated]        DATETIME NOT NULL ,
+ [Effective_Start]     DATETIME NOT NULL CONSTRAINT [DF_Groups_Effective_Start] DEFAULT ((1)) ,
+ [Effective_End]       DATETIME NULL ,
+ [Group_Business_Name] VARCHAR(50) NOT NULL ,
+ [Created_By]          INT NOT NULL ,
+ [Last_Updated_By]     INT NOT NULL ,
+ [Group_Type_ID]       INT NOT NULL ,
 
- CONSTRAINT [PK_Email_Groups] PRIMARY KEY CLUSTERED ([Email_Group_ID] ASC),
+ CONSTRAINT [PK_Email_Groups] PRIMARY KEY CLUSTERED ([Group_ID] ASC),
  CONSTRAINT [FK_660] FOREIGN KEY ([Created_By])
-  REFERENCES [dbo].[USERS]([User_ID]),
+  REFERENCES [dbo].[Users]([User_ID]),
  CONSTRAINT [FK_664] FOREIGN KEY ([Last_Updated_By])
-  REFERENCES [dbo].[USERS]([User_ID])
+  REFERENCES [dbo].[Users]([User_ID]),
+ CONSTRAINT [FK_677] FOREIGN KEY ([Group_Type_ID])
+  REFERENCES [dbo].[GroupTypes]([Group_Type_ID])
 );
 GO
 
@@ -573,6 +593,8 @@ GO
 --SKIP Index: [fkIdx_660]
 
 --SKIP Index: [fkIdx_664]
+
+--SKIP Index: [fkIdx_677]
 
 
 --************************************** [dbo].[CompanyCalendar]
@@ -594,7 +616,7 @@ CREATE TABLE [dbo].[CompanyCalendar]
 
  CONSTRAINT [PK_Company_Calendar] PRIMARY KEY CLUSTERED ([Calendar_ID] ASC),
  CONSTRAINT [FK_Calendar_CreatedBy] FOREIGN KEY ([Created_By])
-  REFERENCES [dbo].[USERS]([User_ID]),
+  REFERENCES [dbo].[Users]([User_ID]),
  CONSTRAINT [FK_Calendar_CreatedFor] FOREIGN KEY ([Company_ID])
   REFERENCES [dbo].[Companies]([Company_ID]),
  CONSTRAINT [FK_Calendar_Type] FOREIGN KEY ([Calendar_Type_ID])
@@ -639,21 +661,21 @@ GO
 --SKIP Index: [fkIdx_Company_Products_Discount]
 
 
---************************************** [dbo].[EmailGroupsUsers]
+--************************************** [dbo].[GroupUsers]
 
-CREATE TABLE [dbo].[EmailGroupsUsers]
+CREATE TABLE [dbo].[GroupUsers]
 (
  [ID]              INT IDENTITY (1, 1) NOT NULL ,
  [Effective_Start] DATETIME NOT NULL ,
  [Effective_End]   DATETIME NULL ,
  [User_ID]         INT NOT NULL ,
- [Email_Group_ID]  INT NOT NULL ,
+ [Group_ID]        INT NOT NULL ,
 
  CONSTRAINT [PK_UserEmailGroups] PRIMARY KEY CLUSTERED ([ID] ASC),
- CONSTRAINT [FK_User_Email_Group] FOREIGN KEY ([Email_Group_ID])
-  REFERENCES [dbo].[EmailGroups]([Email_Group_ID]),
+ CONSTRAINT [FK_User_Email_Group] FOREIGN KEY ([Group_ID])
+  REFERENCES [dbo].[Groups]([Group_ID]),
  CONSTRAINT [FK_User_Email_Group_For] FOREIGN KEY ([User_ID])
-  REFERENCES [dbo].[USERS]([User_ID])
+  REFERENCES [dbo].[Users]([User_ID])
 );
 GO
 
@@ -749,9 +771,9 @@ CREATE TABLE [dbo].[TaskAssignmentsToUsers]
 
  CONSTRAINT [PK_SaleTaskAssignments] PRIMARY KEY CLUSTERED ([Assignment_ID] ASC),
  CONSTRAINT [FK_Sales_Task_Assigned_By] FOREIGN KEY ([Assigned_By])
-  REFERENCES [dbo].[USERS]([User_ID]),
+  REFERENCES [dbo].[Users]([User_ID]),
  CONSTRAINT [FK_Sales_Task_Assigned_For] FOREIGN KEY ([Assigned_User])
-  REFERENCES [dbo].[USERS]([User_ID]),
+  REFERENCES [dbo].[Users]([User_ID]),
  CONSTRAINT [FK_Sales_Task_Assigned_For_Company] FOREIGN KEY ([Company_Task_ID])
   REFERENCES [dbo].[TasksForCompanies]([ID]),
  CONSTRAINT [FK_Sales_Task_Status] FOREIGN KEY ([Task_Status])
@@ -782,7 +804,7 @@ CREATE TABLE [dbo].[TaskAuditTrails]
 
  CONSTRAINT [PK_SalesTaskAuditTrails] PRIMARY KEY CLUSTERED ([ID] ASC),
  CONSTRAINT [FK_SalesTaskAuditTrails_Activity_By] FOREIGN KEY ([ActivityBy])
-  REFERENCES [dbo].[USERS]([User_ID]),
+  REFERENCES [dbo].[Users]([User_ID]),
  CONSTRAINT [FK_SalesTaskAuditTrails_Assigned_User] FOREIGN KEY ([Task_Assignment_ID])
   REFERENCES [dbo].[TaskAssignmentsToUsers]([Assignment_ID]),
  CONSTRAINT [FK_SalesTaskAuditTrails_Task_Status] FOREIGN KEY ([Task_Status])
