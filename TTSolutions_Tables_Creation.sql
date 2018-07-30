@@ -236,23 +236,31 @@ CREATE TABLE [dbo].[Users]
  [Fax]             INT NULL ,
  [Email]           NVARCHAR(100) NULL ,
  [create_on]       DATETIME NOT NULL ,
- [created_by]      NVARCHAR(20) NOT NULL ,
  [last_updated]    DATETIME NOT NULL ,
- [last_updated_by] NVARCHAR(20) NOT NULL ,
  [Effective_Start] DATETIME NOT NULL CONSTRAINT [DF_Users_Effective_Start] DEFAULT ((1)) ,
  [Effective_End]   DATETIME NULL ,
  [Company_ID]      INT NOT NULL ,
+ [created_by]      INT NOT NULL ,
+ [last_updated_by] INT NOT NULL ,
 
  CONSTRAINT [PK_All_Users] PRIMARY KEY CLUSTERED ([User_ID] ASC),
  CONSTRAINT [UQ__USERS__681E8A60D2308CFE] UNIQUE NONCLUSTERED ([User_Name] ASC),
  CONSTRAINT [UQ__USERS__A9D10534E457AB22] UNIQUE NONCLUSTERED ([Email] ASC),
  CONSTRAINT [FK_609] FOREIGN KEY ([Company_ID])
-  REFERENCES [dbo].[Companies]([Company_ID])
+  REFERENCES [dbo].[Companies]([Company_ID]),
+ CONSTRAINT [FK_681] FOREIGN KEY ([created_by])
+  REFERENCES [dbo].[Users]([User_ID]),
+ CONSTRAINT [FK_685] FOREIGN KEY ([last_updated_by])
+  REFERENCES [dbo].[Users]([User_ID])
 );
 GO
 
 
 --SKIP Index: [fkIdx_609]
+
+--SKIP Index: [fkIdx_681]
+
+--SKIP Index: [fkIdx_685]
 
 
 --************************************** [dbo].[SystemModules]
